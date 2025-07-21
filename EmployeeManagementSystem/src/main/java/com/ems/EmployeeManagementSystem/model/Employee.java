@@ -1,0 +1,135 @@
+package com.ems.EmployeeManagementSystem.model;
+
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+
+@Data
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "employees")
+public class Employee{
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
+    private long id;
+
+    @Column(name = "emp_id", nullable = false, unique = true)
+    private String empId;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false,unique = true)
+    private String email;
+
+    @Column(nullable = false,unique = true)
+    private String phone;
+
+    @Column(nullable = false,unique = true)
+    private String userName;
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String role;
+
+    @Column(nullable = false)
+    private String department;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(nullable = false)
+    private String address;
+
+    private String city;
+    private String state;
+    private String nationality;
+
+    @Column(name = "date_of_birth", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate dob;
+
+    @Column(name = "blood_group")
+    private String bloodGroup;
+
+    private String fatherName;
+
+    @Enumerated(EnumType.STRING)
+    private MaritalStatus maritalStatus=MaritalStatus.Single;
+
+    private String spouseName;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @Column(nullable = false)
+    private LocalDate joinDate;
+
+    private String workLocation;
+
+    private String imageName;
+    private String imageType;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] imageData;
+
+    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeaveRequest> leaves;
+
+    @OneToMany(mappedBy = "employee" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendances;
+
+    @OneToMany(mappedBy ="employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Salary> salaries;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeaveSummary> leaveSummaries;
+
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", empId='" + empId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", department='" + department + '\'' +
+                ", gender=" + gender +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", dob=" + dob +
+                ", bloodGroup='" + bloodGroup + '\'' +
+                ", fatherName='" + fatherName + '\'' +
+                ", maritalStatus=" + maritalStatus +
+                ", spouseName='" + spouseName + '\'' +
+                ", joinDate=" + joinDate +
+                ", workLocation='" + workLocation + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ", imageType='" + imageType + '\'' +
+                ", imageData=" + Arrays.toString(imageData) +
+                '}';
+    }
+}
