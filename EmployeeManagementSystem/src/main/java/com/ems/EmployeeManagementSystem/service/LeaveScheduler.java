@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LeaveSchedular {
+public class LeaveScheduler {
 
 
     private final EmployeeRepo employeeRepo;

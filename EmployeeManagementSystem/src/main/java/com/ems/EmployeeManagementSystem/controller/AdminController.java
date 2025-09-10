@@ -1,76 +1,61 @@
 package com.ems.EmployeeManagementSystem.controller;
 
 
-import com.ems.EmployeeManagementSystem.dto.EmployeeRequestDTO;
-import com.ems.EmployeeManagementSystem.dto.EmployeeResponseDTO;
-import com.ems.EmployeeManagementSystem.model.LeaveRequest;
-import com.ems.EmployeeManagementSystem.model.News;
-import com.ems.EmployeeManagementSystem.repository.EmployeeRepo;
-import com.ems.EmployeeManagementSystem.repository.NewsRepo;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.AttendanceControllerIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.EmployeeControllerIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.LeaveControllerIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.NewsControllerIF;
+import com.ems.EmployeeManagementSystem.dto.*;
+import com.ems.EmployeeManagementSystem.model.*;
 import com.ems.EmployeeManagementSystem.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin")
-public class AdminController {
-
+@CrossOrigin(origins = "http://127.0.0.1:5500/")
+public class AdminController implements EmployeeControllerIF, AttendanceControllerIF
+        , LeaveControllerIF, NewsControllerIF {
 
     private final AdminService adminService;
-
 
     //Employee controller section
 
     @GetMapping("/getEmployees")
     public ResponseEntity<List<EmployeeResponseDTO>> getEmployees() {
-
-        List<EmployeeResponseDTO> employees = adminService.getEmployees();
-        return new ResponseEntity<>(employees, HttpStatus.FOUND);
+        return adminService.getEmployees();
     }
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<String> addEmployee(@Valid @RequestPart("EmployeeRequestDTO") EmployeeRequestDTO employee,@RequestPart(value = "imageData",required = false) MultipartFile image) {
-
-        try {
-            return adminService.addEmployee(employee, image);
-        }
-        catch (Exception e)
-        {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<Employee> addEmployee(@Valid @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+            return adminService.addEmployee(employeeRequestDTO);
     }
 
-    @PutMapping("/updateEmployee/{emp_id}")
-    public ResponseEntity<String> updateEmployee(@Valid @RequestBody EmployeeRequestDTO employee,@PathVariable("emp_id") String empId) {
-            return adminService.updateEmployee(empId,employee);
+    @PutMapping("/updateEmployee/{id}")
+    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EmployeeRequestDTO employee,@PathVariable("id") long id) {
+            return adminService.updateEmployee(id,employee);
     }
 
     @DeleteMapping("/deleteEmployee/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable("id") Long id) {
-
         return adminService.deleteEmployee(id);
     }
 
-
     //News Controller Section
-
     @GetMapping("/getNews")
     public ResponseEntity<List<News>> getNews() {
-
         return adminService.getNews();
     }
 
     @PostMapping("/addNews")
-    public ResponseEntity<String> addNews(@RequestBody News news) {
-
+    public ResponseEntity<?> addNews(@RequestBody News news) {
         return adminService.addNews(news);
     }
 
@@ -81,32 +66,37 @@ public class AdminController {
 
     @DeleteMapping("/deleteNews/{newsId}")
     public ResponseEntity<String> deleteNews(@PathVariable("newsId") int newsId) {
-
         return adminService.deleteNews(newsId);
+    }
+
+    //attendance controller section
+
+    @GetMapping("/getAttendanceRecords")
+    public ResponseEntity<List<AttendanceResponseDTO>> getAttendanceRecords() {
+        return adminService.getAttendanceRecords();
+    }
+
+    @PatchMapping("/updateAttendanceStatus/{attendance_id}")
+    public ResponseEntity<?> updateAttendanceStatus(
+            @PathVariable("attendance_id") int attendance_id,
+            @RequestBody AttendanceRequestDto attendanceRequestDto) {
+        return adminService.updateAttendanceStatus(attendance_id,attendanceRequestDto);
+    }
+
+    @DeleteMapping("/deleteAttendance/{attendance_id}")
+    public ResponseEntity<String> deleteAttendance(@PathVariable("attendance_id") int attendance_id) {
+        return adminService.deleteAttendance(attendance_id);
     }
 
     //leave controller section
 
-    @GetMapping("/getPendingLeaves")
-    public ResponseEntity<List<LeaveRequest>> getPendingLeaves() {
-
-        return adminService.getPendingLeaves();
+    @GetMapping("/getLeaveRecords")
+    public ResponseEntity<List<LeaveResponseDTO>> getPendingLeaves() {
+        return adminService.getLeaveRecords();
     }
 
-    @GetMapping("/getApprovedLeaves")
-    public ResponseEntity<List<LeaveRequest>> getApprovedLeaves() {
-
-        return adminService.getApprovedLeaves();
-    }
-
-    @GetMapping("/getRejectedLeaves")
-    public ResponseEntity<List<LeaveRequest>> getRejectedLeaves() {
-        return adminService.getRejectedLeaves();
-    }
-
-    @PostMapping("/approveLeave/{id}")
+    @PatchMapping("/approveLeave/{id}")
     public ResponseEntity<String> approveLeave(@PathVariable("id") int id) {
-
         return adminService.approveLeave(id);
     }
 
@@ -115,4 +105,10 @@ public class AdminController {
         return adminService.rejectLeave(id);
     }
 
+    //Salary section
+
+    @PostMapping("/addSalary")
+    public ResponseEntity<String> addSalary(@RequestBody SalaryRequestDTO salaryRequestDTO) {
+        return adminService.addSalary(salaryRequestDTO);
+    }
 }

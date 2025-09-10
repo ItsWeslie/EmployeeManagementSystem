@@ -8,13 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface LeaveRequestRepo extends JpaRepository<LeaveRequest, Integer> {
     List<LeaveRequest> findByStatus(LeaveStatus leaveStatus);
-
-    boolean existsByEmployeeEmpIdAndStartDate(String empId, LocalDate startDate);
 
     List<LeaveRequest> findByEmployeeEmpId(String empId);
 

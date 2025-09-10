@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.Year;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,7 @@ public interface LeaveSummaryRepo extends JpaRepository<LeaveSummary, Integer> {
 
     @Query(value = "select * from leave_summary_table where emp_id=?", nativeQuery = true)
     LeaveSummary findByEmpId(String empId);
+
+    @Query(value = "select * from leave_summary_table where emp_id=? and month=? and year=?", nativeQuery = true)
+    LeaveSummary findByEmpIdAndMonthAndYear(String empId, int month, Year year);
 }

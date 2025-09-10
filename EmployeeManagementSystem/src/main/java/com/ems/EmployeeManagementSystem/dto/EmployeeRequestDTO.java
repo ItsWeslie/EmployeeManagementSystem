@@ -1,7 +1,9 @@
 package com.ems.EmployeeManagementSystem.dto;
 
+import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.Gender;
 import com.ems.EmployeeManagementSystem.model.MaritalStatus;
+import com.ems.EmployeeManagementSystem.model.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -30,7 +32,8 @@ public class EmployeeRequestDTO {
     private String phone;
     private String userName;
     private String password;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     private String department;
 
     @Enumerated(EnumType.STRING)
@@ -55,5 +58,35 @@ public class EmployeeRequestDTO {
     @Lob
     private byte[] imageData;
     private String workLocation;
+
+
+    public Employee employeeRequest(EmployeeRequestDTO dto) {
+        Employee emp = new Employee();
+        emp.setEmpId(dto.getEmpId());
+        emp.setName(dto.getName());
+        emp.setEmail(dto.getEmail());
+        emp.setPhone(dto.getPhone());
+        emp.setUserName(dto.getUserName());
+        //passwordEncoder().encode(); have to enable after security got enabled;
+        emp.setPassword(dto.getPassword());
+        emp.setRole(dto.getRole());
+        emp.setAddress(dto.getAddress());
+        emp.setDepartment(dto.getDepartment());
+        emp.setBloodGroup(dto.getBloodGroup());
+        emp.setCity(dto.getCity());
+        emp.setState(dto.getState());
+        emp.setDob(dto.getDob());
+        emp.setGender(dto.getGender());
+        emp.setFatherName(dto.getFatherName());
+        emp.setJoinDate(dto.getJoinDate());
+        emp.setNationality(dto.getNationality());
+        emp.setMaritalStatus(dto.getMaritalStatus());
+        emp.setSpouseName(dto.getSpouseName());
+        emp.setImageName(dto.getImageName());
+        emp.setImageType(dto.getImageType());
+        emp.setImageData(dto.getImageData());
+        emp.setWorkLocation(dto.getWorkLocation());
+        return emp;
+    }
 
 }

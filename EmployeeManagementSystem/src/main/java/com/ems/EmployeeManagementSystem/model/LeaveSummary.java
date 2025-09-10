@@ -7,14 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.YearMonth;
 
-
-@Component
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 @Table(name="leave_summary_table")
 public class LeaveSummary {
 

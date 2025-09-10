@@ -1,7 +1,9 @@
 package com.ems.EmployeeManagementSystem.dto;
 
+import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.Gender;
 import com.ems.EmployeeManagementSystem.model.MaritalStatus;
+import com.ems.EmployeeManagementSystem.model.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,9 +11,12 @@ import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Data
@@ -25,7 +30,8 @@ public class EmployeeResponseDTO {
     private String email;
     private String phone;
     private String userName;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     private String department;
 
     @Enumerated(EnumType.STRING)
@@ -50,5 +56,40 @@ public class EmployeeResponseDTO {
     @Lob
     private byte[] imageData;
     private String workLocation;
+
+    public ResponseEntity<List<EmployeeResponseDTO>> employeeResponse(List<Employee> employees) {
+        List<EmployeeResponseDTO> dtoList = new ArrayList<>();
+
+        for (Employee emp : employees) {
+            EmployeeResponseDTO dto = new EmployeeResponseDTO();
+            dto.setId(emp.getId());
+            dto.setEmpId(emp.getEmpId());
+            dto.setName(emp.getName());
+            dto.setEmail(emp.getEmail());
+            dto.setPhone(emp.getPhone());
+            dto.setUserName(emp.getUserName());
+            dto.setRole(emp.getRole());
+            dto.setAddress(emp.getAddress());
+            dto.setDepartment(emp.getDepartment());
+            dto.setBloodGroup(emp.getBloodGroup());
+            dto.setCity(emp.getCity());
+            dto.setState(emp.getState());
+            dto.setDob(emp.getDob());
+            dto.setGender(emp.getGender());
+            dto.setFatherName(emp.getFatherName());
+            dto.setJoinDate(emp.getJoinDate());
+            dto.setNationality(emp.getNationality());
+            dto.setMaritalStatus(emp.getMaritalStatus());
+            dto.setSpouseName(emp.getSpouseName());
+            dto.setImageName(emp.getImageName());
+            dto.setImageType(emp.getImageType());
+            dto.setImageData(emp.getImageData());
+            dto.setWorkLocation(emp.getWorkLocation());
+
+            dtoList.add(dto);
+        }
+
+        return ResponseEntity.ok(dtoList);
+    }
 
 }

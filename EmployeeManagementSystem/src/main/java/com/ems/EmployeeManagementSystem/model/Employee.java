@@ -4,11 +4,13 @@ package com.ems.EmployeeManagementSystem.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -28,27 +30,42 @@ public class Employee{
     @Column(name = "id", updatable = false)
     private long id;
 
+    @NotBlank(message = "EmpId must not be empty")
     @Column(name = "emp_id", nullable = false, unique = true)
     private String empId;
 
+    @NotBlank(message = "Name must not be empty")
     @Column(nullable = false)
     private String name;
 
+    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "Invalid email format")
+    @NotBlank(message = "Email must not be empty")
     @Column(nullable = false,unique = true)
     private String email;
 
+    @Pattern(regexp = "\\d{10}")
+    @NotBlank(message = "Phone must not be empty")
     @Column(nullable = false,unique = true)
     private String phone;
+
 
     @Column(nullable = false,unique = true)
     private String userName;
 
     @JsonIgnore
+    @Size(min = 8,message = "Password must be at least 8 characters!")
+    @NotBlank(message = "Password must not be empty")
+    @Pattern(regexp =  "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()])[A-Za-z\\d!@#$%^&*()]{8,}$",
+    message = "Password must be at least 8 characters long and contain at least one uppercase letter, " +
+            "one lowercase letter, one number, and one special character")
     @Column(nullable = false)
     private String password;
 
+    @NotBlank(message = "Role must not be empty")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
     @Column(nullable = false)
     private String department;
@@ -101,6 +118,9 @@ public class Employee{
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LeaveSummary> leaveSummaries;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmployeeNewsStatus> newsStatuses;
 
 
     @Override

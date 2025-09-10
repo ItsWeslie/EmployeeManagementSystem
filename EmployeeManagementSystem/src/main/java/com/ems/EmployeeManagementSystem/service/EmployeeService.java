@@ -1,22 +1,23 @@
 package com.ems.EmployeeManagementSystem.service;
 
+import com.ems.EmployeeManagementSystem.dto.AttendanceRequestDto;
 import com.ems.EmployeeManagementSystem.dto.EmployeeRequestDTO;
 import com.ems.EmployeeManagementSystem.dto.EmployeeResponseDTO;
 import com.ems.EmployeeManagementSystem.dto.LeaveRequestDto;
 import com.ems.EmployeeManagementSystem.exceptionHandling.GlobalExceptionHandler;
 import com.ems.EmployeeManagementSystem.exceptionHandling.LeaveNotFoundException;
+import com.ems.EmployeeManagementSystem.exceptionHandling.ResourceNotFound;
 import com.ems.EmployeeManagementSystem.model.*;
-import com.ems.EmployeeManagementSystem.repository.EmployeeRepo;
-import com.ems.EmployeeManagementSystem.repository.LeaveRequestRepo;
-import com.ems.EmployeeManagementSystem.repository.LeaveSummaryRepo;
-import com.ems.EmployeeManagementSystem.repository.NewsRepo;
+import com.ems.EmployeeManagementSystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -32,7 +33,7 @@ public class EmployeeService {
     //private LeaveSummary leaveSummary;
     private final LeaveRequestRepo leaveRequestRepo;
     private final GlobalExceptionHandler globalExceptionHandler;
-
+    private final AttendanceRepo attendanceRepo;
 
 
     //Helper Section
@@ -115,6 +116,71 @@ public class EmployeeService {
         return false;
     }
 
+    public TimeSlot isTimeIsWithinRange(LocalTime time) {
+
+        LocalTime morningRange1 = LocalTime.of(8,0);
+        LocalTime morningRange2 = LocalTime.of(9,30);
+
+        LocalTime noonRange1 = LocalTime.of(12,30);
+        LocalTime noonRange2 = LocalTime.of(13,30);
+
+        if (!time.isBefore(morningRange1) && !time.isAfter(morningRange2)) {
+            return TimeSlot.MORNING;
+        }
+        if (!time.isBefore(noonRange1) && !time.isAfter(noonRange2)) {
+            return TimeSlot.NOON;
+        }
+        return TimeSlot.INVALID;
+    }
+
+    public Employee isValidEmployee(String empId) {
+        return employeeRepo.findByEmpId(empId).orElseThrow(() -> new ResourceNotFound("Employee Not Found"));
+    }
+
+    public boolean checkIfEmployeeExists(String empId) {
+        String emp = employeeRepo.findEmployeeByEmpId(empId);
+        return !emp.isEmpty();
+    }
+
+    public Attendance findExistingAttendance(String empId,LocalDate date) {
+        return attendanceRepo.findByEmpIdAndDate(empId,date);
+    }
+
+    public boolean isRequestedDateValid(LocalDate date,int month, Year year) {
+        LocalDate today = LocalDate.now();
+        Year currentYear = Year.now();
+
+        return today.equals(date) && today.getMonthValue()==month&& currentYear.equals(year);
+    }
+
+    public ResponseEntity<String> markAttendancePresent(Employee employee,AttendanceRequestDto attendanceRequestDto) {
+
+        Attendance attendance = new Attendance();
+        attendance.setEmployee(employee);
+        attendance.setDate(attendanceRequestDto.getDate());
+        attendance.setTime(attendanceRequestDto.getTime());
+        attendance.setMonth(attendanceRequestDto.getMonth());
+        attendance.setYear(attendanceRequestDto.getYear());
+        attendance.setStatus(AttendanceStatus.PRESENT);
+
+        attendanceRepo.save(attendance);
+        return ResponseEntity.ok("Attendance Marked successfully for half day");
+    }
+
+    public ResponseEntity<String> markAttendanceHalfDay(Employee employee,AttendanceRequestDto attendanceRequestDto) {
+        Attendance attendance = new Attendance();
+        attendance.setEmployee(employee);
+        attendance.setDate(attendanceRequestDto.getDate());
+        attendance.setTime(attendanceRequestDto.getTime());
+        attendance.setMonth(attendanceRequestDto.getMonth());
+        attendance.setYear(attendanceRequestDto.getYear());
+        attendance.setStatus(AttendanceStatus.HALF_DAY);
+
+        attendanceRepo.save(attendance);
+        return ResponseEntity.ok("Attendance Marked successfully for half day");
+    }
+
+
     public ResponseEntity<?> getMyData(String email) {
 
         Employee employees = employeeRepo.findByEmail(email).orElse(null);
@@ -126,32 +192,40 @@ public class EmployeeService {
 
     }
 
-    public ResponseEntity<?> updateMyData(String empId, EmployeeRequestDTO employeeRequestDTO) {
-        
-        Employee emp = employeeRepo.findByEmpId(empId).orElse(null);
-        
-        if(emp!=null)
-        {
-            emp.setPhone(employeeRequestDTO.getPhone());
-            emp.setEmail(employeeRequestDTO.getEmail());
-            emp.setAddress(employeeRequestDTO.getAddress());
-            emp.setDepartment(employeeRequestDTO.getDepartment());
-            emp.setBloodGroup(employeeRequestDTO.getBloodGroup());
-            emp.setCity(employeeRequestDTO.getCity());
-            emp.setState(employeeRequestDTO.getState());
-            emp.setDob(employeeRequestDTO.getDob());
-            emp.setGender(employeeRequestDTO.getGender());
-            emp.setFatherName(employeeRequestDTO.getFatherName());
-            emp.setSpouseName(employeeRequestDTO.getSpouseName());
-            emp.setImageName(employeeRequestDTO.getImageName());
-            emp.setImageType(employeeRequestDTO.getImageType());
-            emp.setImageData(employeeRequestDTO.getImageData());
-            emp.setMaritalStatus(employeeRequestDTO.getMaritalStatus());
-            
-            employeeRepo.save(emp);
-            return new ResponseEntity<>("User data updated successfully", HttpStatus.OK);
+    public ResponseEntity<?> updateMyData(long id, EmployeeRequestDTO employeeRequestDTO, MultipartFile image) {
+
+
+        try {
+            Employee emp = employeeRepo.findById(id).orElse(null);
+
+            if (emp != null) {
+                emp.setPhone(employeeRequestDTO.getPhone());
+                emp.setEmail(employeeRequestDTO.getEmail());
+                emp.setAddress(employeeRequestDTO.getAddress());
+                emp.setDepartment(employeeRequestDTO.getDepartment());
+                emp.setBloodGroup(employeeRequestDTO.getBloodGroup());
+                emp.setCity(employeeRequestDTO.getCity());
+                emp.setState(employeeRequestDTO.getState());
+                emp.setDob(employeeRequestDTO.getDob());
+                emp.setGender(employeeRequestDTO.getGender());
+                emp.setFatherName(employeeRequestDTO.getFatherName());
+                emp.setSpouseName(employeeRequestDTO.getSpouseName());
+                emp.setImageName(employeeRequestDTO.getImageName());
+                emp.setImageType(employeeRequestDTO.getImageType());
+                emp.setImageData(employeeRequestDTO.getImageData());
+                emp.setMaritalStatus(employeeRequestDTO.getMaritalStatus());
+                emp.setImageName(image.getOriginalFilename());
+                emp.setImageType(image.getContentType());
+                emp.setImageData(image.getBytes());
+
+                employeeRepo.save(emp);
+                return new ResponseEntity<>("User data updated successfully", HttpStatus.OK);
+            }
         }
-        
+        catch (Exception e) {
+            globalExceptionHandler.handleException(e);
+        }
+
         return new ResponseEntity<>("User not found",HttpStatus.NOT_FOUND);
     }
 
@@ -252,9 +326,9 @@ public class EmployeeService {
 
     public ResponseEntity<?> getMyLeaveHistory(String empId) {
 
-        Employee employee = employeeRepo.findByEmpId(empId).orElse(null);
+        boolean employeeExists = checkIfEmployeeExists(empId);
 
-        if(employee!=null) {
+        if(employeeExists) {
             return ResponseEntity.ok(leaveRequestRepo.findByEmployeeEmpId(empId));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
@@ -263,4 +337,81 @@ public class EmployeeService {
     public ResponseEntity<?> getMostUsedLeave(String empId) {
         return ResponseEntity.ok().body(leaveRequestRepo.getMostUsedLeaveType(empId));
     }
+
+    // Attendance section
+
+    public ResponseEntity<?> getAttendanceStatus(String empId) {
+        Attendance attendance = attendanceRepo.findByEmpIdAndDate(empId, LocalDate.now());
+
+        if(attendance != null) {
+            return ResponseEntity.ok(attendance.getStatus());
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attendance not found"); // have to check this logic
+    }
+
+    public ResponseEntity<String> takingAttendance(AttendanceRequestDto attendanceRequestDto) {
+
+       String empId = attendanceRequestDto.getEmpId();
+       Employee employee = isValidEmployee(empId);// have to modify this employee fetch logic
+
+       Attendance existingAttendance = findExistingAttendance(empId,attendanceRequestDto.getDate());
+
+       if(existingAttendance!=null) {
+               return ResponseEntity.status(HttpStatus.CONFLICT).body("Attendance already taken");
+       }
+
+            LocalTime time = attendanceRequestDto.getTime();
+            TimeSlot timeSlot = isTimeIsWithinRange(time);
+
+            if(timeSlot.equals(TimeSlot.INVALID))
+            {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("TimeSlot is invalid");
+            }
+
+            boolean isDateValid =
+                isRequestedDateValid(attendanceRequestDto.getDate(),attendanceRequestDto.getMonth(), attendanceRequestDto.getYear());
+
+            if(!isDateValid) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Attendance date is invalid");
+            }
+
+
+        return switch (timeSlot) {
+            case MORNING -> markAttendancePresent(employee, attendanceRequestDto);
+            case NOON -> markAttendanceHalfDay(employee, attendanceRequestDto);
+            default -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You are absent today");
+        };
+
+    }
+
+
+    public ResponseEntity<?> getMyAttendanceDetails(String empId) {
+       boolean employeeExists = checkIfEmployeeExists(empId);
+
+       if(employeeExists) {
+           return ResponseEntity.ok(attendanceRepo.findByEmpId(empId));
+       }
+
+       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attendance details not found");
+    }
+
+    public ResponseEntity<?> getCountOfPresent(String empId) {
+        boolean employeeExists = checkIfEmployeeExists(empId);
+        int currentMonth = LocalDate.now().getMonthValue();
+
+        if(employeeExists) {
+            return ResponseEntity.ok(attendanceRepo.countPresentByEmpIdAndMonth(empId,currentMonth));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attendance details not found");
+    }
+
+    public ResponseEntity<?> findLast7DaysAttendanceStatus(String empId) {
+        if(checkIfEmployeeExists(empId)) {
+            return ResponseEntity.ok(attendanceRepo.findLast7DaysAttendanceStatusByEmpId(empId));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Last 7 days details not found");
+    }
+
 }
