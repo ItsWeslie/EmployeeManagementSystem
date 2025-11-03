@@ -2,7 +2,7 @@ package com.ems.EmployeeManagementSystem.service;
 
 
 import com.ems.EmployeeManagementSystem.model.Attendance;
-import com.ems.EmployeeManagementSystem.model.AttendanceStatus;
+import com.ems.EmployeeManagementSystem.model.enums.AttendanceStatus;
 import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.LeaveSummary;
 import com.ems.EmployeeManagementSystem.repository.AttendanceRepo;

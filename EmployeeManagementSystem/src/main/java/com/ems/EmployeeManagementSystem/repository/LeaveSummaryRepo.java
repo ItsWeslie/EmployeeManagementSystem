@@ -4,6 +4,7 @@ import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.LeaveSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Year;
@@ -18,8 +19,11 @@ public interface LeaveSummaryRepo extends JpaRepository<LeaveSummary, Integer> {
     Optional<?> findRemainingLeaveByEmpId(String emp_id);
 
     @Query(value = "select * from leave_summary_table where emp_id=?", nativeQuery = true)
-    LeaveSummary findByEmpId(String empId);
+    Optional<LeaveSummary> findByEmpId(String empId);
 
     @Query(value = "select * from leave_summary_table where emp_id=? and month=? and year=?", nativeQuery = true)
     LeaveSummary findByEmpIdAndMonthAndYear(String empId, int month, Year year);
+
+    @Query(value = "select total_leave from leave_summary_table where emp_id= :empId and year= :year", nativeQuery = true)
+    int findTotalLeaveByEmployee_empIdAndYear(@Param("empId") String empId,@Param("year") int year);
 }

@@ -1,11 +1,10 @@
 package com.ems.EmployeeManagementSystem.dto;
 
 import com.ems.EmployeeManagementSystem.model.Employee;
-import com.ems.EmployeeManagementSystem.model.Gender;
-import com.ems.EmployeeManagementSystem.model.MaritalStatus;
-import com.ems.EmployeeManagementSystem.model.Role;
+import com.ems.EmployeeManagementSystem.model.enums.Gender;
+import com.ems.EmployeeManagementSystem.model.enums.MaritalStatus;
+import com.ems.EmployeeManagementSystem.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
@@ -14,14 +13,14 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 public class EmployeeRequestDTO {
 
     private String empId;
@@ -55,9 +54,16 @@ public class EmployeeRequestDTO {
     private LocalDate joinDate;
     private String imageName;
     private String imageType;
+
     @Lob
     private byte[] imageData;
     private String workLocation;
+    private PasswordEncoder passwordEncoder;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public EmployeeRequestDTO(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
     public Employee employeeRequest(EmployeeRequestDTO dto) {
@@ -67,8 +73,7 @@ public class EmployeeRequestDTO {
         emp.setEmail(dto.getEmail());
         emp.setPhone(dto.getPhone());
         emp.setUserName(dto.getUserName());
-        //passwordEncoder().encode(); have to enable after security got enabled;
-        emp.setPassword(dto.getPassword());
+        emp.setPassword(passwordEncoder.encode(dto.getPassword()));
         emp.setRole(dto.getRole());
         emp.setAddress(dto.getAddress());
         emp.setDepartment(dto.getDepartment());
@@ -82,9 +87,9 @@ public class EmployeeRequestDTO {
         emp.setNationality(dto.getNationality());
         emp.setMaritalStatus(dto.getMaritalStatus());
         emp.setSpouseName(dto.getSpouseName());
-        emp.setImageName(dto.getImageName());
-        emp.setImageType(dto.getImageType());
-        emp.setImageData(dto.getImageData());
+        emp.getProfilePic().setImageName(dto.getImageName());
+        emp.getProfilePic().setImageType(dto.getImageType());
+        emp.getProfilePic().setImageData(dto.getImageData());
         emp.setWorkLocation(dto.getWorkLocation());
         return emp;
     }

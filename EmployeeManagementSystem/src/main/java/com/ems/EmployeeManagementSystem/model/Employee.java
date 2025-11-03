@@ -1,6 +1,9 @@
 package com.ems.EmployeeManagementSystem.model;
 
 
+import com.ems.EmployeeManagementSystem.model.enums.Gender;
+import com.ems.EmployeeManagementSystem.model.enums.MaritalStatus;
+import com.ems.EmployeeManagementSystem.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -13,7 +16,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -100,28 +102,23 @@ public class Employee{
 
     private String workLocation;
 
-    private String imageName;
-    private String imageType;
+    @OneToOne(mappedBy = "employee",cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private ProfilePic profilePic;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] imageData;
-
-    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employee",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LeaveRequest> leaves;
 
-    @OneToMany(mappedBy = "employee" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employee" ,cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Attendance> attendances;
 
-    @OneToMany(mappedBy ="employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy ="employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Salary> salaries;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LeaveSummary> leaveSummaries;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EmployeeNewsStatus> newsStatuses;
-
 
     @Override
     public String toString() {
@@ -146,10 +143,6 @@ public class Employee{
                 ", maritalStatus=" + maritalStatus +
                 ", spouseName='" + spouseName + '\'' +
                 ", joinDate=" + joinDate +
-                ", workLocation='" + workLocation + '\'' +
-                ", imageName='" + imageName + '\'' +
-                ", imageType='" + imageType + '\'' +
-                ", imageData=" + Arrays.toString(imageData) +
-                '}';
+                ", workLocation='" + workLocation+"}";
     }
 }

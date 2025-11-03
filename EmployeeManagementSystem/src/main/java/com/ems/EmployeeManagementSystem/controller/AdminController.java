@@ -1,16 +1,12 @@
 package com.ems.EmployeeManagementSystem.controller;
 
 
-import com.ems.EmployeeManagementSystem.controller.controllerIF.AttendanceControllerIF;
-import com.ems.EmployeeManagementSystem.controller.controllerIF.EmployeeControllerIF;
-import com.ems.EmployeeManagementSystem.controller.controllerIF.LeaveControllerIF;
-import com.ems.EmployeeManagementSystem.controller.controllerIF.NewsControllerIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.*;
 import com.ems.EmployeeManagementSystem.dto.*;
 import com.ems.EmployeeManagementSystem.model.*;
 import com.ems.EmployeeManagementSystem.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin")
-@CrossOrigin(origins = "http://127.0.0.1:5500/")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class AdminController implements EmployeeControllerIF, AttendanceControllerIF
         , LeaveControllerIF, NewsControllerIF {
 
@@ -39,7 +35,8 @@ public class AdminController implements EmployeeControllerIF, AttendanceControll
     }
 
     @PutMapping("/updateEmployee/{id}")
-    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EmployeeRequestDTO employee,@PathVariable("id") long id) {
+    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EmployeeRequestDTO employee,
+                                            @PathVariable("id") long id) {
             return adminService.updateEmployee(id,employee);
     }
 
@@ -60,12 +57,12 @@ public class AdminController implements EmployeeControllerIF, AttendanceControll
     }
 
     @PutMapping("/updateNews/{newsId}")
-    public ResponseEntity<String> updateNews(@RequestBody News news,@PathVariable("newsId") int newsId) {
+    public ResponseEntity<String> updateNews(@RequestBody News news,@PathVariable("newsId") long newsId) {
         return adminService.updateNews(newsId,news);
     }
 
     @DeleteMapping("/deleteNews/{newsId}")
-    public ResponseEntity<String> deleteNews(@PathVariable("newsId") int newsId) {
+    public ResponseEntity<String> deleteNews(@PathVariable("newsId") long newsId) {
         return adminService.deleteNews(newsId);
     }
 
@@ -108,7 +105,27 @@ public class AdminController implements EmployeeControllerIF, AttendanceControll
     //Salary section
 
     @PostMapping("/addSalary")
-    public ResponseEntity<String> addSalary(@RequestBody SalaryRequestDTO salaryRequestDTO) {
+    public ResponseEntity<Salary> addSalary(@RequestBody SalaryRequestDTO salaryRequestDTO) {
         return adminService.addSalary(salaryRequestDTO);
+    }
+
+    @PatchMapping("/approveSalary/{salary_id}")
+    public ResponseEntity<String> approveSalary(@PathVariable("salary_id") int salary_id) {
+        return adminService.approveSalary(salary_id);
+    }
+
+    @PutMapping("/updateSalary")
+    public ResponseEntity<String> updateSalary(@RequestBody SalaryRequestDTO salaryRequestDTO) {
+        return adminService.updateSalary(salaryRequestDTO);
+    }
+
+    @DeleteMapping("/deleteSalary/{salary_id}")
+    public ResponseEntity<String> deleteSalary(@PathVariable("salary_id") int salary_id) {
+        return adminService.deleteSalary(salary_id);
+    }
+
+    @GetMapping("/getSalaryDash")
+    public ResponseEntity<AdminSalaryResponseDTO> getSalaries() {
+        return adminService.getSalaryDash();
     }
 }

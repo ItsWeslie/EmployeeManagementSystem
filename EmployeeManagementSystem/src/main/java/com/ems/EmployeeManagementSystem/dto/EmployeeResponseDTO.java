@@ -1,9 +1,9 @@
 package com.ems.EmployeeManagementSystem.dto;
 
 import com.ems.EmployeeManagementSystem.model.Employee;
-import com.ems.EmployeeManagementSystem.model.Gender;
-import com.ems.EmployeeManagementSystem.model.MaritalStatus;
-import com.ems.EmployeeManagementSystem.model.Role;
+import com.ems.EmployeeManagementSystem.model.enums.Gender;
+import com.ems.EmployeeManagementSystem.model.enums.MaritalStatus;
+import com.ems.EmployeeManagementSystem.model.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,10 +18,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class EmployeeResponseDTO {
 
     private long id;
@@ -81,15 +81,43 @@ public class EmployeeResponseDTO {
             dto.setNationality(emp.getNationality());
             dto.setMaritalStatus(emp.getMaritalStatus());
             dto.setSpouseName(emp.getSpouseName());
-            dto.setImageName(emp.getImageName());
-            dto.setImageType(emp.getImageType());
-            dto.setImageData(emp.getImageData());
             dto.setWorkLocation(emp.getWorkLocation());
 
             dtoList.add(dto);
         }
 
         return ResponseEntity.ok(dtoList);
+    }
+
+    public ResponseEntity<EmployeeResponseDTO> employeeResponse(Employee emp) {
+
+        EmployeeResponseDTO dto = new EmployeeResponseDTO();
+
+        dto.setId(emp.getId());
+        dto.setEmpId(emp.getEmpId());
+        dto.setName(emp.getName());
+        dto.setEmail(emp.getEmail());
+        dto.setPhone(emp.getPhone());
+        dto.setUserName(emp.getUserName());
+        dto.setRole(emp.getRole());
+        dto.setAddress(emp.getAddress());
+        dto.setDepartment(emp.getDepartment());
+        dto.setBloodGroup(emp.getBloodGroup());
+        dto.setCity(emp.getCity());
+        dto.setState(emp.getState());
+        dto.setDob(emp.getDob());
+        dto.setGender(emp.getGender());
+        dto.setFatherName(emp.getFatherName());
+        dto.setJoinDate(emp.getJoinDate());
+        dto.setNationality(emp.getNationality());
+        dto.setMaritalStatus(emp.getMaritalStatus());
+        dto.setSpouseName(emp.getSpouseName());
+        dto.setImageName(emp.getProfilePic().getImageName());
+        dto.setImageType(emp.getProfilePic().getImageType());
+        dto.setImageData(emp.getProfilePic().getImageData());
+        dto.setWorkLocation(emp.getWorkLocation());
+
+        return ResponseEntity.ok(dto);
     }
 
 }

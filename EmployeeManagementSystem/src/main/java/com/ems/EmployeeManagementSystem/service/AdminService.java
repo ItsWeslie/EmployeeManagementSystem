@@ -6,13 +6,11 @@ import com.ems.EmployeeManagementSystem.service.servicehandlers.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AdminService {
 
     private final EmployeeServiceHandler employeeServiceHandler;
@@ -67,10 +65,27 @@ public class AdminService {
        return leaveServiceHandler.rejectLeave(id);
     }
 
-    public ResponseEntity<String> addSalary(SalaryRequestDTO salaryRequestDTO) {
+    // salary section
+    public ResponseEntity<Salary> addSalary(SalaryRequestDTO salaryRequestDTO) {
         return salaryServiceHandler.addSalary(salaryRequestDTO);
     }
 
+    public ResponseEntity<String> approveSalary(int salaryId) {
+        return salaryServiceHandler.approveSalary(salaryId);
+    }
+
+    public ResponseEntity<String> updateSalary(SalaryRequestDTO salaryRequestDTO) {
+        return salaryServiceHandler.updateSalary(salaryRequestDTO);
+    }
+
+    public ResponseEntity<String> deleteSalary(int id) {
+        return salaryServiceHandler.deleteSalary(id);
+    }
+
+    public ResponseEntity<AdminSalaryResponseDTO> getSalaryDash()
+    {
+        return salaryServiceHandler.getSalaryDash();
+    }
 
     //News service section
     public ResponseEntity<List<News>> getNews() {
@@ -81,11 +96,11 @@ public class AdminService {
        return newsServiceHandler.addNews(news);
     }
 
-    public ResponseEntity<String> updateNews(int newsId, News news) {
+    public ResponseEntity<String> updateNews(long newsId, News news) {
         return newsServiceHandler.updateNews(newsId, news);
     }
 
-    public ResponseEntity<String> deleteNews(int newsId) {
+    public ResponseEntity<String> deleteNews(long newsId) {
         return newsServiceHandler.deleteNews(newsId);
     }
 

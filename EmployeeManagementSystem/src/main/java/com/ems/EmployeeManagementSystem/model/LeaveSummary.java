@@ -44,9 +44,7 @@ public class LeaveSummary {
 
     @JoinColumn(name = "emp_id", referencedColumnName = "emp_id", nullable = false)
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee employee;
-
-
 
 }

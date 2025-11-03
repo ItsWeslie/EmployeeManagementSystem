@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface NewsControllerIF {
 
-    public ResponseEntity<List<News>> getNews();
     public ResponseEntity<?> addNews(@RequestBody News news);
-    public ResponseEntity<String> updateNews(@RequestBody News news,@PathVariable("newsId") int newsId);
-    public ResponseEntity<String> deleteNews(@PathVariable("newsId") int newsId);
-
+    public ResponseEntity<String> updateNews(@RequestBody News news,@PathVariable("newsId") long newsId);
+    public ResponseEntity<String> deleteNews(@PathVariable("newsId") long newsId);
+    public ResponseEntity<List<News>> getNews();
 }

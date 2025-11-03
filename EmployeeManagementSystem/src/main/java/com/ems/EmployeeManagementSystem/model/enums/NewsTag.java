@@ -1,4 +1,4 @@
-package com.ems.EmployeeManagementSystem.model;
+package com.ems.EmployeeManagementSystem.model.enums;
 
 
 public enum NewsTag {

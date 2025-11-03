@@ -1,8 +1,9 @@
 package com.ems.EmployeeManagementSystem.service.servicehandlers;
 
 import com.ems.EmployeeManagementSystem.dto.LeaveResponseDTO;
+import com.ems.EmployeeManagementSystem.exceptionHandling.LeaveSummaryNotFoundException;
 import com.ems.EmployeeManagementSystem.model.LeaveRequest;
-import com.ems.EmployeeManagementSystem.model.LeaveStatus;
+import com.ems.EmployeeManagementSystem.model.enums.LeaveStatus;
 import com.ems.EmployeeManagementSystem.model.LeaveSummary;
 import com.ems.EmployeeManagementSystem.repository.LeaveRequestRepo;
 import com.ems.EmployeeManagementSystem.repository.LeaveSummaryRepo;
@@ -63,7 +64,8 @@ public class LeaveServiceHandler {
 
         int noOfDays = (int) ChronoUnit.DAYS.between(startDate, endDate)+1;
 
-        LeaveSummary leaveSummary1 =leaveSummaryRepo.findByEmpId(empId);
+        LeaveSummary leaveSummary1 =leaveSummaryRepo.findByEmpId(empId)
+                .orElseThrow(()->new LeaveSummaryNotFoundException("Leave summary not found for empId: "+empId));
 
         if(noOfDays>leaveSummary1.getRemainingLeave())
         {

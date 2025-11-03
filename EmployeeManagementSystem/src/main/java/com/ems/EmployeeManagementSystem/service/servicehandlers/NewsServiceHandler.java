@@ -1,14 +1,19 @@
 package com.ems.EmployeeManagementSystem.service.servicehandlers;
 
+import com.ems.EmployeeManagementSystem.dto.NewsRespDTO;
+import com.ems.EmployeeManagementSystem.model.EmployeeNewsStatus;
 import com.ems.EmployeeManagementSystem.model.News;
+import com.ems.EmployeeManagementSystem.repository.EmployeeNewsStatusRepo;
 import com.ems.EmployeeManagementSystem.repository.NewsRepo;
-import com.ems.EmployeeManagementSystem.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,10 +21,10 @@ public class NewsServiceHandler {
 
     private final NewsRepo newsRepo;
     private final NewsService newsService;
+    private final EmployeeNewsStatusRepo employeeNewsStatusRepo;
 
     public ResponseEntity<List<News>> getNews() {
-        List<News> news = newsRepo.findAll();
-        return new ResponseEntity<>(news, HttpStatus.OK);
+        return ResponseEntity.ok(newsRepo.findAll());
     }
 
     public ResponseEntity<?> addNews(News news) {
@@ -32,7 +37,7 @@ public class NewsServiceHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("News not created");
     }
 
-    public ResponseEntity<String> updateNews(int newsId, News news) {
+    public ResponseEntity<String> updateNews(long newsId, News news) {
         News news1 = newsRepo.findById(newsId).orElse(null);
         if(news1!=null) {
             news1.setNewsTitle(news.getNewsTitle());
@@ -45,12 +50,42 @@ public class NewsServiceHandler {
         return new ResponseEntity<>("News not found", HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<String> deleteNews(int newsId) {
+    public ResponseEntity<String> deleteNews(long newsId) {
         News news = newsRepo.findById(newsId).orElse(null);
         if (news!=null) {
             newsRepo.delete(news);
             return new ResponseEntity<>("News deleted successfully", HttpStatus.OK);
         }
         return new ResponseEntity<>("News not found", HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<List<NewsRespDTO>> getNews(String empId) {
+
+        List<News> news = newsRepo.findAll();
+
+        List<EmployeeNewsStatus> newsStatuses = employeeNewsStatusRepo.findEmployeeNewsStatusesByEmployee_EmpId(empId);
+
+        Map<Long,Boolean> empNewsStsMp = new HashMap<>();
+
+        for(EmployeeNewsStatus newsStatus : newsStatuses) {
+            empNewsStsMp.put(newsStatus.getNews().getNewsId(), newsStatus.isRead());
+        }
+
+        List<NewsRespDTO> newsResp = new ArrayList<>();
+
+        for(News newNews:news)
+        {
+            NewsRespDTO newsRespDTO = new NewsRespDTO();
+            newsRespDTO.setNewsId(newNews.getNewsId());
+            newsRespDTO.setNewsTitle(newNews.getNewsTitle());
+            newsRespDTO.setNewsContent(newNews.getNewsContent());
+            newsRespDTO.setNewsDate(newNews.getNewsDate());
+            newsRespDTO.setNewsTag(newNews.getNewsTag());
+            newsRespDTO.setRead(empNewsStsMp.getOrDefault(newNews.getNewsId(), false));
+            newsResp.add(newsRespDTO);
+        }
+
+        return ResponseEntity.ok(newsResp);
+
     }
 }

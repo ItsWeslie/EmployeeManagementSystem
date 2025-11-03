@@ -1,6 +1,8 @@
 package com.ems.EmployeeManagementSystem.model;
 
 
+import com.ems.EmployeeManagementSystem.model.enums.LeaveStatus;
+import com.ems.EmployeeManagementSystem.model.enums.LeaveType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +27,7 @@ public class LeaveRequest {
     @Column(name = "leaveReq_id",updatable = false)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "emp_id", nullable=false,name = "emp_id")
     @JsonIgnore
     private Employee employee;
@@ -43,9 +45,10 @@ public class LeaveRequest {
     @Size(min = 5, message = "Reason at least contain 5 characters ")
     private String reason;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable=false)
     @NotNull(message = "Required leave type")
-    private String leaveType;
+    private LeaveType leaveType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)

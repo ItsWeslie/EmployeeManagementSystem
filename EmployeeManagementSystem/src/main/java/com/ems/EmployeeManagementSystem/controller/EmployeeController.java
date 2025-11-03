@@ -1,49 +1,68 @@
 package com.ems.EmployeeManagementSystem.controller;
 
-import com.ems.EmployeeManagementSystem.dto.AttendanceRequestDto;
-import com.ems.EmployeeManagementSystem.dto.EmployeeRequestDTO;
-import com.ems.EmployeeManagementSystem.dto.LeaveRequestDto;
-import com.ems.EmployeeManagementSystem.model.AttendanceStatus;
-import com.ems.EmployeeManagementSystem.model.LeaveRequest;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.EMPAttendanceDataIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.EMPLeaveDataIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.EMPDataIF;
+import com.ems.EmployeeManagementSystem.controller.controllerIF.EMPNewsDataIF;
+import com.ems.EmployeeManagementSystem.dto.*;
+import com.ems.EmployeeManagementSystem.model.News;
+import com.ems.EmployeeManagementSystem.model.enums.AttendanceStatus;
 import com.ems.EmployeeManagementSystem.service.EmployeeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/employee")
-@CrossOrigin(origins = "http://127.0.0.1:5500/")
-public class EmployeeController {
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+public class EmployeeController implements EMPDataIF, EMPLeaveDataIF, EMPAttendanceDataIF, EMPNewsDataIF {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/getMyData")
-    public ResponseEntity<?> getMyData(@RequestParam("email") String email) {
-
+    //emp data section
+    @GetMapping("/getMyData/{email}")
+    public ResponseEntity<?> getMyData(@PathVariable("email") String email) {
         return employeeService.getMyData(email);
     }
 
-    @PutMapping("/updateMyData/{id}")
-    public ResponseEntity<?> updateMyData(@PathVariable("id") long id,
-                                          @RequestPart("EmployeeRequestDTO") EmployeeRequestDTO employee,
+    @PutMapping("/updateMyProfilePic/{empId}")
+    public ResponseEntity<?> updateMyData(@PathVariable("empId") String empId,
                                           @RequestPart(value = "imageData",required = false) MultipartFile image
                                           ) {
-        return employeeService.updateMyData(id,employee,image);
+        return employeeService.updateMyData(empId,image);
     }
 
-    @GetMapping("/getNews")
-    public ResponseEntity<?> getNews() {
-        return employeeService.getNews();
+    @PutMapping("/changeMyPassword")
+    public ResponseEntity<?> changeMyPassword(@Valid @RequestBody PasswordChangeReqDTO passwordChangeReqDTO) {
+        System.out.println("inside changeMyPassword controller");
+        return employeeService.changeMyPassword(passwordChangeReqDTO);
     }
+
+    //Attendance section
+
+    @GetMapping("/getMyAttendanceDetails/{emp_id}")
+    public ResponseEntity<?> getMyAttendanceDetails(@PathVariable("emp_id") String emp_id) {
+        return employeeService.getMyAttendanceDetails(emp_id);
+    }
+
+    @PostMapping("/takeAttendance")
+    public ResponseEntity<String> takingAttendance(@RequestBody AttendanceRequestDto attendanceRequestDto) {
+        return employeeService.takingAttendance(attendanceRequestDto);
+    }
+
+    //Leave section
 
     @GetMapping("/getMyLeaveHistory/{emp_id}")
     public ResponseEntity<?> getMyLeaveHistory(@PathVariable("emp_id") String emp_id) {
         return employeeService.getMyLeaveHistory(emp_id);
     }
 
-    @PostMapping("/applyMyLeave")
+    @PostMapping("/applyLeave")
     public ResponseEntity<String> applyLeave(@RequestBody LeaveRequestDto leaveRequestdto) {
         return employeeService.applyOrUpdateLeave(leaveRequestdto);
     }
@@ -55,41 +74,29 @@ public class EmployeeController {
 
     @DeleteMapping("/deleteMyLeave/{leaveReq_id}")
     public ResponseEntity<String> deleteLeaveRequest(@PathVariable("leaveReq_id") int id) {
-        System.out.println(id);
         return employeeService.deleteLeaveRequest(id);
     }
 
-    @GetMapping("/getMostUsedLeave/{emp_id}")
-    public ResponseEntity<?> getMostUsedLeave(@PathVariable("emp_id") String emp_id) {
-        return employeeService.getMostUsedLeave(emp_id);
+    //salary section
+    @GetMapping("/getMySalaryDetails/{emp_id}")
+    public ResponseEntity<?> getMySalaryDetails(@PathVariable("emp_id") String emp_id) {
+        return employeeService.getMySalaryDetails(emp_id);
     }
 
-    //Attendence section
-
-    @GetMapping("/getAttendance/{emp_id}")
-    public ResponseEntity<AttendanceStatus> getAttendanceStatus(@PathVariable("emp_id") String emp_id) {
-        //return employeeService.getAttendanceStatus(emp_id); // change this logic date 15-08-2025
-        return ResponseEntity.ok(AttendanceStatus.PRESENT);
+    //news section
+    @GetMapping("/getNews/{empId}")
+    public ResponseEntity<List<NewsRespDTO>> getNews(@PathVariable("empId") String empId) {
+        return employeeService.getNews(empId);
     }
 
-    @GetMapping("/getMyAttendanceDetails/{emp_id}")
-    public ResponseEntity<?> getMyAttendanceDetails(@PathVariable("emp_id") String emp_id) {
-        return employeeService.getMyAttendanceDetails(emp_id);
+    @PutMapping("/markNewsAsRead")
+    public void markNewsAsRead(@RequestBody NewsReqDTO newsReqDTO) {
+        employeeService.markNewsAsRead(newsReqDTO);
     }
 
-    @PostMapping("/takingAttendance")
-    public ResponseEntity<String> takingAttendance(@RequestBody AttendanceRequestDto attendanceRequestDto) {
-        return employeeService.takingAttendance(attendanceRequestDto);
-    }
-
-    @GetMapping("/getCountOfPresent/{emp_id}")
-    public ResponseEntity<?> getCountOfPresent(@PathVariable("emp_id") String emp_id) {
-        return employeeService.getCountOfPresent(emp_id);
-    }
-
-    @GetMapping("/findLast7DaysAttendanceStatus/{emp_id}")
-    public ResponseEntity<?> findLast7DaysAttendanceStatus(@PathVariable("emp_id") String emp_id) {
-        return employeeService.findLast7DaysAttendanceStatus(emp_id);
+    @PutMapping("/markAllNewsAsRead/{empId}")
+    public void markAllNewsAsRead(@PathVariable("empId") String empId) {
+        employeeService.markAllNewsAsRead(empId);
     }
 
 }

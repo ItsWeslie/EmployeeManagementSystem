@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.YearMonth;
 import java.util.List;
@@ -64,9 +65,9 @@ public class EmployeeServiceHandler {
             emp.setNationality(employee.getNationality());
             emp.setMaritalStatus(employee.getMaritalStatus());
             emp.setSpouseName(employee.getSpouseName());
-            emp.setImageName(employee.getImageName());
-            emp.setImageType(employee.getImageType());
-            emp.setImageData(employee.getImageData());
+            emp.getProfilePic().setImageName(employee.getImageName());
+            emp.getProfilePic().setImageType(employee.getImageType());
+            emp.getProfilePic().setImageData(employee.getImageData());
             emp.setWorkLocation(employee.getWorkLocation());
 
             employeeRepo.save(emp);
@@ -85,5 +86,4 @@ public class EmployeeServiceHandler {
 
         return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
     }
-
 }
