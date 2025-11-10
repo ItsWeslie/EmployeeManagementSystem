@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.model;
 
-import com.ems.EmployeeManagementSystem.model.enums.Role;
+import com.ems.EmployeeManagementSystem.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

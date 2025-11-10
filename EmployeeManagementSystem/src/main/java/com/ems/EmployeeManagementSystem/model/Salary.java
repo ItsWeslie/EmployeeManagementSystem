@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.model;
 
-import com.ems.EmployeeManagementSystem.model.enums.SalaryStatus;
+import com.ems.EmployeeManagementSystem.enums.SalaryStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

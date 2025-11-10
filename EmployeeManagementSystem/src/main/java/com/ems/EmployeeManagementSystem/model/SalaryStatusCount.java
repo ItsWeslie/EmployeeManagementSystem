@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.model;
 
-import com.ems.EmployeeManagementSystem.model.enums.SalaryStatus;
+import com.ems.EmployeeManagementSystem.enums.SalaryStatus;
 
 public interface SalaryStatusCount {
     SalaryStatus getStatus();

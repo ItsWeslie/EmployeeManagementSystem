@@ -1,14 +1,12 @@
 package com.ems.EmployeeManagementSystem.repository;
 
 import com.ems.EmployeeManagementSystem.model.*;
-import com.ems.EmployeeManagementSystem.model.enums.SalaryStatus;
-import lombok.Value;
+import com.ems.EmployeeManagementSystem.enums.SalaryStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.util.List;

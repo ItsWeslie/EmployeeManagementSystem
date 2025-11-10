@@ -1,8 +1,8 @@
 package com.ems.EmployeeManagementSystem.model;
 
 
-import com.ems.EmployeeManagementSystem.model.enums.LeaveStatus;
-import com.ems.EmployeeManagementSystem.model.enums.LeaveType;
+import com.ems.EmployeeManagementSystem.enums.LeaveStatus;
+import com.ems.EmployeeManagementSystem.enums.LeaveType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

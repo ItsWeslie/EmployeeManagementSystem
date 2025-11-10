@@ -1,8 +1,7 @@
 package com.ems.EmployeeManagementSystem.repository;
 
-import com.ems.EmployeeManagementSystem.dto.Last7DaysAttendanceDTO;
 import com.ems.EmployeeManagementSystem.model.Attendance;
-import com.ems.EmployeeManagementSystem.model.enums.AttendanceStatus;
+import com.ems.EmployeeManagementSystem.enums.AttendanceStatus;
 import com.ems.EmployeeManagementSystem.model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,0 +1,6 @@
+package com.ems.EmployeeManagementSystem.enums;
+
+
+public enum NewsTag {
+    IT,FINANCE,SALES,MARKETING,HR,ADMINISTRATION,PRODUCTION,CUSTOMER_SERVICE, RESEARCH_DEVELOPMENT,PROCUREMENT;
+}

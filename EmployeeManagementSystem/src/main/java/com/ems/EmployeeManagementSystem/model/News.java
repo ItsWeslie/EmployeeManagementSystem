@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.model;
 
-import com.ems.EmployeeManagementSystem.model.enums.NewsTag;
+import com.ems.EmployeeManagementSystem.enums.NewsTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

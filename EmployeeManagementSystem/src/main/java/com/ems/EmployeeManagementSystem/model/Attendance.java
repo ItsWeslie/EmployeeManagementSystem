@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.model;
 
-import com.ems.EmployeeManagementSystem.model.enums.AttendanceStatus;
+import com.ems.EmployeeManagementSystem.enums.AttendanceStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

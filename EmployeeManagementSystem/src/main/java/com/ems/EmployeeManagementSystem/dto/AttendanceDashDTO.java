@@ -1,7 +1,7 @@
 package com.ems.EmployeeManagementSystem.dto;
 
 import com.ems.EmployeeManagementSystem.model.Attendance;
-import com.ems.EmployeeManagementSystem.model.enums.AttendanceStatus;
+import com.ems.EmployeeManagementSystem.enums.AttendanceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

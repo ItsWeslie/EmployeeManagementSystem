@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.dto;
 
-import com.ems.EmployeeManagementSystem.model.enums.LeaveStatus;
+import com.ems.EmployeeManagementSystem.enums.LeaveStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;

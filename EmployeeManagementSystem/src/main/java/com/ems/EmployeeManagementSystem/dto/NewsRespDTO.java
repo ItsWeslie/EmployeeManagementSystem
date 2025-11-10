@@ -1,6 +1,6 @@
 package com.ems.EmployeeManagementSystem.dto;
 
-import com.ems.EmployeeManagementSystem.model.enums.NewsTag;
+import com.ems.EmployeeManagementSystem.enums.NewsTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;

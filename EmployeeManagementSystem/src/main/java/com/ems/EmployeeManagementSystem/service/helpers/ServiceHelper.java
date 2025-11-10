@@ -5,7 +5,7 @@ import com.ems.EmployeeManagementSystem.exceptionHandling.ResourceNotFound;
 import com.ems.EmployeeManagementSystem.model.Attendance;
 import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.LeaveRequest;
-import com.ems.EmployeeManagementSystem.model.enums.TimeSlot;
+import com.ems.EmployeeManagementSystem.enums.TimeSlot;
 import com.ems.EmployeeManagementSystem.repository.AttendanceRepo;
 import com.ems.EmployeeManagementSystem.repository.EmployeeRepo;
 import com.ems.EmployeeManagementSystem.repository.LeaveRequestRepo;

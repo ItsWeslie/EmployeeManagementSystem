@@ -1,9 +1,9 @@
 package com.ems.EmployeeManagementSystem.dto;
 
 import com.ems.EmployeeManagementSystem.model.Employee;
-import com.ems.EmployeeManagementSystem.model.enums.Gender;
-import com.ems.EmployeeManagementSystem.model.enums.MaritalStatus;
-import com.ems.EmployeeManagementSystem.model.enums.Role;
+import com.ems.EmployeeManagementSystem.enums.Gender;
+import com.ems.EmployeeManagementSystem.enums.MaritalStatus;
+import com.ems.EmployeeManagementSystem.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

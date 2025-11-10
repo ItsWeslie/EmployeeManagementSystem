@@ -1,8 +1,8 @@
 package com.ems.EmployeeManagementSystem.repository;
 
 import com.ems.EmployeeManagementSystem.model.LeaveRequest;
-import com.ems.EmployeeManagementSystem.model.enums.LeaveStatus;
-import com.ems.EmployeeManagementSystem.model.enums.LeaveType;
+import com.ems.EmployeeManagementSystem.enums.LeaveStatus;
+import com.ems.EmployeeManagementSystem.enums.LeaveType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

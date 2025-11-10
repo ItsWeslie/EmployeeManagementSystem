@@ -1,5 +1,6 @@
 package com.ems.EmployeeManagementSystem.controller;
 
+import com.ems.EmployeeManagementSystem.dto.APIResponse;
 import com.ems.EmployeeManagementSystem.dto.AuthRequest;
 import com.ems.EmployeeManagementSystem.dto.AuthResponse;
 import com.ems.EmployeeManagementSystem.model.UserAuth;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class AuthController {
-
 
     private final AuthenticationManager authManager;
     private final JWTService jwtService;
@@ -44,15 +44,18 @@ public class AuthController {
                     return ResponseEntity.ok(new AuthResponse(token,role,email));
                 }
 
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Invalid email or password");
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new APIResponse("Invalid email or password"));
             }
         catch (UsernameNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User not found. Kindly sign up.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new APIResponse("User not found, Kindly sign up"));
         } catch (org.springframework.security.authentication.BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid password or email. Please try again.");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new APIResponse("Invalid password or email, Please try again"));
         }
     }
 }

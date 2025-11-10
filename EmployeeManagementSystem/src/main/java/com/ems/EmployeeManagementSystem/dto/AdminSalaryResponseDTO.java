@@ -2,14 +2,12 @@ package com.ems.EmployeeManagementSystem.dto;
 
 
 import com.ems.EmployeeManagementSystem.model.*;
-import com.ems.EmployeeManagementSystem.model.enums.SalaryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 
