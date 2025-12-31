@@ -30,27 +30,27 @@ public class AttendanceScheduler {
 
     //mark attendance as absent
     public void markAttendance(Employee employee,LocalDate date) {
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee);
-        attendance.setDate(date);
-        attendance.setTime(LocalTime.now());
-        attendance.setStatus(AttendanceStatus.ABSENT);
-        attendance.setMonth(YearMonth.now().getMonthValue());
-        attendance.setYear(Year.now());
-
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .date(date)
+                .time(LocalTime.now())
+                .status(AttendanceStatus.ABSENT)
+                .month(YearMonth.now().getMonthValue())
+                .year(Year.now())
+                .build();
         attendanceRepo.save(attendance);
     }
 
     // mark weekends and holidays as holidays
     public void markWeekendsOrHolidays(Employee employee,LocalDate date) {
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee);
-        attendance.setDate(date);
-        attendance.setTime(LocalTime.now());
-        attendance.setStatus(AttendanceStatus.HOLIDAY);
-        attendance.setMonth(YearMonth.now().getMonthValue());
-        attendance.setYear(Year.now());
-
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .date(date)
+                .time(LocalTime.now())
+                .status(AttendanceStatus.HOLIDAY)
+                .month(YearMonth.now().getMonthValue())
+                .year(Year.now())
+                .build();
         attendanceRepo.save(attendance);
     }
 

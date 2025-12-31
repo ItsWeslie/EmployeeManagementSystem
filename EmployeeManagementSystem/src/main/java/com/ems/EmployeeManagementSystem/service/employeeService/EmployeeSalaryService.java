@@ -57,18 +57,18 @@ public class EmployeeSalaryService implements EmployeeSalaryServiceIF {
 
         LocalDate nextSalaryDate = getNextPaymentDate();
 
-        EmployeeSalaryResponseDTO empSalaryResponseDTO = new EmployeeSalaryResponseDTO();
-
-        empSalaryResponseDTO.setTotalSalary(currentMonthSalary.getTotalSalary());
-        empSalaryResponseDTO.setBasicPay(currentMonthSalary.getBasicPay());
-        empSalaryResponseDTO.setHRA(currentMonthSalary.getHra());
-        empSalaryResponseDTO.setAllowances(currentMonthSalary.getAllowances());
-        empSalaryResponseDTO.setDeductions(currentMonthSalary.getDeductions());
-        empSalaryResponseDTO.setNetSalary(employeeSalaryInsights.getNetSalary());
-        empSalaryResponseDTO.setAvgMonthlySalary(employeeSalaryInsights.getAvgMonthlySalary());
-        empSalaryResponseDTO.setTax(employeeSalaryInsights.getTax());
-        empSalaryResponseDTO.setLast6MonthAvgSalary(employeeSalaryInsights.getAvgMonthlySalary());
-        empSalaryResponseDTO.setNextSalaryDate(nextSalaryDate);
+        EmployeeSalaryResponseDTO empSalaryResponseDTO = EmployeeSalaryResponseDTO.builder()
+                        .totalSalary(currentMonthSalary.getTotalSalary())
+                        .basicPay(currentMonthSalary.getBasicPay())
+                        .HRA(currentMonthSalary.getHra())
+                        .allowances(currentMonthSalary.getAllowances())
+                        .deductions(currentMonthSalary.getDeductions())
+                        .netSalary(employeeSalaryInsights.getNetSalary())
+                        .avgMonthlySalary(employeeSalaryInsights.getAvgMonthlySalary())
+                        .tax(employeeSalaryInsights.getTax())
+                        .last6MonthAvgSalary(employeeSalaryInsights.getAvgMonthlySalary())
+                        .nextSalaryDate(nextSalaryDate)
+                        .build();
 
         return ResponseEntity.ok(empSalaryResponseDTO);
     }

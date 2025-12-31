@@ -39,26 +39,29 @@ public class EmployeeAttendanceService {
 
     public ResponseEntity<String> markAttendancePresent(Employee employee,AttendanceRequestDto attendanceRequestDto) {
 
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee);
-        attendance.setDate(attendanceRequestDto.getDate());
-        attendance.setTime(attendanceRequestDto.getTime());
-        attendance.setMonth(attendanceRequestDto.getMonth());
-        attendance.setYear(attendanceRequestDto.getYear());
-        attendance.setStatus(AttendanceStatus.PRESENT);
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .date(attendanceRequestDto.getDate())
+                .time(attendanceRequestDto.getTime())
+                .month(attendanceRequestDto.getMonth())
+                .year(attendanceRequestDto.getYear())
+                .status(AttendanceStatus.PRESENT)
+                .build();
 
         attendanceRepo.save(attendance);
         return ResponseEntity.ok("Attendance Marked successfully for full day");
     }
 
     public ResponseEntity<String> markAttendanceHalfDay(Employee employee,AttendanceRequestDto attendanceRequestDto) {
-        Attendance attendance = new Attendance();
-        attendance.setEmployee(employee);
-        attendance.setDate(attendanceRequestDto.getDate());
-        attendance.setTime(attendanceRequestDto.getTime());
-        attendance.setMonth(attendanceRequestDto.getMonth());
-        attendance.setYear(attendanceRequestDto.getYear());
-        attendance.setStatus(AttendanceStatus.HALF_DAY);
+
+        Attendance attendance = Attendance.builder()
+                .employee(employee)
+                .date(attendanceRequestDto.getDate())
+                .time(attendanceRequestDto.getTime())
+                .month(attendanceRequestDto.getMonth())
+                .year(attendanceRequestDto.getYear())
+                .status(AttendanceStatus.HALF_DAY)
+                .build();
 
         attendanceRepo.save(attendance);
         return ResponseEntity.ok("Attendance Marked successfully for half day");
@@ -67,7 +70,7 @@ public class EmployeeAttendanceService {
     public ResponseEntity<String> takingAttendance(AttendanceRequestDto attendanceRequestDto) {
 
         String empId = attendanceRequestDto.getEmpId();
-        Employee employee = serviceHelper.isValidEmployee(empId);// have to modify this employee fetch logic
+        Employee employee = serviceHelper.isValidEmployee(empId);
 
         Attendance existingAttendance = serviceHelper.findExistingAttendance(empId,attendanceRequestDto.getDate());
 
@@ -96,7 +99,6 @@ public class EmployeeAttendanceService {
             case NOON -> markAttendanceHalfDay(employee, attendanceRequestDto);
             default -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You are absent today");
         };
-
     }
 
     public ResponseEntity<?> getMyAttendanceDetails(String empId) {
@@ -121,17 +123,18 @@ public class EmployeeAttendanceService {
         double totalAttendancePercentageForCurrentMonth =
                 findTotalAttendancePercentageForCurrentMonth(totalPresentInCurrentMonth);
 
-        AttendanceDashDTO attendanceDashDTO = new AttendanceDashDTO();
-
-        attendanceDashDTO.setAttendanceStatus(attendanceStatus);
-        attendanceDashDTO.setOverAllAttendance(attendanceList);
-        attendanceDashDTO.setLast7DaysAttendance(last7DaysAttendanceList);
-        attendanceDashDTO.setTotalPresentInCurrentMonth(totalPresentInCurrentMonth);
-        attendanceDashDTO.setTotalDaysInCurrentMonth(totalDaysInCurrentMonth);
-        attendanceDashDTO.setTotalWorkingDays(TOTAL_WORKING_DAY);
-        attendanceDashDTO.setLeaveTaken(totalLeaveTaken);
-        attendanceDashDTO.setMonthlyAttendancePercentage(totalAttendancePercentageForCurrentMonth);
-        attendanceDashDTO.setTotalAttendancePercentage(totalAttendancePercentage);
+        AttendanceDashDTO attendanceDashDTO = AttendanceDashDTO
+                                .builder()
+                                .attendanceStatus(attendanceStatus)
+                                .overAllAttendance(attendanceList)
+                                .last7DaysAttendance(last7DaysAttendanceList)
+                                .totalPresentInCurrentMonth(totalPresentInCurrentMonth)
+                                .totalDaysInCurrentMonth(totalDaysInCurrentMonth)
+                                .totalWorkingDays(TOTAL_WORKING_DAY)
+                                .leaveTaken(totalLeaveTaken)
+                                .monthlyAttendancePercentage(totalAttendancePercentageForCurrentMonth)
+                                .totalAttendancePercentage(totalAttendancePercentage)
+                                .build();
 
         return ResponseEntity.ok(attendanceDashDTO);
     }

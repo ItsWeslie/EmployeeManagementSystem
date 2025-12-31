@@ -2,6 +2,7 @@ package com.ems.EmployeeManagementSystem.service.adminService;
 
 import com.ems.EmployeeManagementSystem.dto.EmployeeRequestDTO;
 import com.ems.EmployeeManagementSystem.dto.EmployeeResponseDTO;
+import com.ems.EmployeeManagementSystem.exceptionHandling.EmployeeNotFoundException;
 import com.ems.EmployeeManagementSystem.interfaces.AdminEmployeeServiceIF;
 import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.LeaveSummary;
@@ -45,9 +46,10 @@ public class AdminEmployeeService implements AdminEmployeeServiceIF {
     }
 
     public ResponseEntity<?> updateEmployee(long id, EmployeeRequestDTO employee) {
-        Employee emp=employeeRepo.findById(id).orElse(null);
 
-        if(emp!=null) {
+        Employee emp = employeeRepo.findById(id)
+                .orElseThrow(()-> new EmployeeNotFoundException("Employee Not Found for id : "+id));
+
             emp.setName(employee.getName());
             emp.setEmail(employee.getEmail());
             emp.setPhone(employee.getPhone());
@@ -72,18 +74,14 @@ public class AdminEmployeeService implements AdminEmployeeServiceIF {
 
             employeeRepo.save(emp);
             return new ResponseEntity<>(emp, HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<String> deleteEmployee(long id) {
 
-        Employee emp = employeeRepo.findById(id).orElse(null);
-        if (emp!=null) {
+        employeeRepo.findById(id)
+                .orElseThrow(()-> new EmployeeNotFoundException("Employee Not Found for id : "+id));
+
             employeeRepo.deleteById(id);
             return new ResponseEntity<>("Employee deleted successfully", HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>("Employee not found", HttpStatus.NOT_FOUND);
     }
 }

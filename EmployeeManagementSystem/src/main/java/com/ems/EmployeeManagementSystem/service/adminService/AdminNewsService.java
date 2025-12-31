@@ -1,6 +1,7 @@
 package com.ems.EmployeeManagementSystem.service.adminService;
 
-import com.ems.EmployeeManagementSystem.dto.NewsRespDTO;
+import com.ems.EmployeeManagementSystem.dto.NewsResponseDTO;
+import com.ems.EmployeeManagementSystem.exceptionHandling.NewsNotFoundException;
 import com.ems.EmployeeManagementSystem.interfaces.AdminNewsServiceIF;
 import com.ems.EmployeeManagementSystem.model.EmployeeNewsStatus;
 import com.ems.EmployeeManagementSystem.model.News;
@@ -12,10 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,54 +41,49 @@ public class AdminNewsService implements AdminNewsServiceIF {
     }
 
     public ResponseEntity<String> updateNews(long newsId, News news) {
-        News news1 = newsRepo.findById(newsId).orElse(null);
-        if(news1!=null) {
-            news1.setNewsTitle(news.getNewsTitle());
-            news1.setNewsContent(news.getNewsContent());
-            news1.setNewsDate(news.getNewsDate());
-            news1.setNewsTag(news.getNewsTag());
-            newsRepo.save(news1);
+        News existingNews = newsRepo.findById(newsId)
+                .orElseThrow(()-> new NewsNotFoundException("News not found for id: " + newsId));
+
+            existingNews.setNewsTitle(news.getNewsTitle());
+            existingNews.setNewsContent(news.getNewsContent());
+            existingNews.setNewsDate(news.getNewsDate());
+            existingNews.setNewsTag(news.getNewsTag());
+            newsRepo.save(existingNews);
+
             return new ResponseEntity<>("News updated successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("News not found", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<String> deleteNews(long newsId) {
-        News news = newsRepo.findById(newsId).orElse(null);
-        if (news!=null) {
-            newsRepo.delete(news);
+
+        newsRepo.findById(newsId)
+                .orElseThrow(()-> new NewsNotFoundException("News not found for id: " + newsId));
+
+            newsRepo.deleteById(newsId);
             return new ResponseEntity<>("News deleted successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("News not found", HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<List<NewsRespDTO>> getNews(String empId) {
+    public ResponseEntity<List<NewsResponseDTO>> getNews(String empId) {
 
-        List<News> news = newsRepo.findAll();
+        List<EmployeeNewsStatus> newsStatuses = employeeNewsStatusRepo
+                .findEmployeeNewsStatusesByEmployee_EmpId(empId);
 
-        List<EmployeeNewsStatus> newsStatuses = employeeNewsStatusRepo.findEmployeeNewsStatusesByEmployee_EmpId(empId);
+        Map<Long,Boolean> empNewsStsMap = new HashMap<>();
 
-        Map<Long,Boolean> empNewsStsMp = new HashMap<>();
+        newsStatuses.forEach(newsStatus ->
+            empNewsStsMap.put(newsStatus.getNews().getNewsId(), newsStatus.isRead()));
 
-        for(EmployeeNewsStatus newsStatus : newsStatuses) {
-            empNewsStsMp.put(newsStatus.getNews().getNewsId(), newsStatus.isRead());
-        }
+        List<NewsResponseDTO> newsResponse = newsRepo.findAll()
+                .stream()
+                .map(news -> NewsResponseDTO.builder()
+                        .newsId(news.getNewsId())
+                        .newsTitle(news.getNewsTitle())
+                        .newsContent(news.getNewsContent())
+                        .newsDate(news.getNewsDate())
+                        .newsTag(news.getNewsTag())
+                        .isRead(empNewsStsMap.getOrDefault(news.getNewsId(), false))
+                        .build())
+                .collect(Collectors.toList());
 
-        List<NewsRespDTO> newsResp = new ArrayList<>();
-
-        for(News newNews:news)
-        {
-            NewsRespDTO newsRespDTO = new NewsRespDTO();
-            newsRespDTO.setNewsId(newNews.getNewsId());
-            newsRespDTO.setNewsTitle(newNews.getNewsTitle());
-            newsRespDTO.setNewsContent(newNews.getNewsContent());
-            newsRespDTO.setNewsDate(newNews.getNewsDate());
-            newsRespDTO.setNewsTag(newNews.getNewsTag());
-            newsRespDTO.setRead(empNewsStsMp.getOrDefault(newNews.getNewsId(), false));
-            newsResp.add(newsRespDTO);
-        }
-
-        return ResponseEntity.ok(newsResp);
-
+        return ResponseEntity.ok(newsResponse);
     }
 }

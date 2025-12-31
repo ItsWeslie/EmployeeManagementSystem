@@ -18,7 +18,7 @@ public class EmployeeNewsController {
     private final EmployeeNewsService employeeNewsService;
 
     @GetMapping("/getNews/{empId}")
-    public ResponseEntity<List<NewsRespDTO>> getNews(@PathVariable("empId") String empId) {
+    public ResponseEntity<List<NewsResponseDTO>> getNews(@PathVariable("empId") String empId) {
         return adminNewsService.getNews(empId);
     }
 

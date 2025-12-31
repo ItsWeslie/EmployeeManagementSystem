@@ -3,6 +3,7 @@ package com.ems.EmployeeManagementSystem.dto;
 import com.ems.EmployeeManagementSystem.model.Attendance;
 import com.ems.EmployeeManagementSystem.enums.AttendanceStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AttendanceDashDTO {
 
  private AttendanceStatus attendanceStatus;

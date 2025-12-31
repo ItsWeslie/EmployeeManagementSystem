@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class EmployeeProfileService {
@@ -28,18 +30,17 @@ public class EmployeeProfileService {
 
     public ResponseEntity<?> getMyData(String email) {
 
-        Employee employee = employeeRepo.findByEmail(email).orElse(null);
+        Employee employee = employeeRepo.findByEmail(email)
+                .orElseThrow(()-> new EmployeeNotFoundException("Employee Not Found for email id : " + email));
 
-        if(employee!=null) return employeeResponseDTO.employeeResponse(employee);
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return employeeResponseDTO.employeeResponse(employee);
     }
 
-    public ResponseEntity<?> updateMyData(String empId, MultipartFile image) {
+    public ResponseEntity<?> updateMyData(String empId, MultipartFile image) throws IOException {
 
-        try {
-            Employee employee = employeeRepo.findByEmpId(empId).orElse(null);
-            if (employee != null) {
+            Employee employee = employeeRepo.findByEmpId(empId)
+                    .orElseThrow(()-> new EmployeeNotFoundException("Employee Not Found for empId : " + empId));
+
                 ProfilePic profilePic = profilePicRepo.findProfilePicByEmployee_EmpId(empId).orElse(new ProfilePic());
                 profilePic.setEmployee(employee);
                 profilePic.setImageName(image.getOriginalFilename());
@@ -48,18 +49,13 @@ public class EmployeeProfileService {
 
                 profilePicRepo.save(profilePic);
 
-                ProfilePicRespDTO profilePicResp = new ProfilePicRespDTO();
-                profilePicResp.setImageName(profilePic.getImageName());
-                profilePicResp.setImageType(profilePic.getImageType());
-                profilePicResp.setImageData(profilePic.getImageData());
+                ProfilePicRespDTO profilePicResp = ProfilePicRespDTO.builder()
+                        .imageName(profilePic.getImageName())
+                        .imageType(profilePic.getImageType())
+                        .imageData(profilePic.getImageData())
+                        .build();
 
                 return ResponseEntity.ok(profilePicResp);
-            }
-        }
-        catch (Exception e) {
-            globalExceptionHandler.handleException(e);
-        }
-        return new ResponseEntity<>("User not found",HttpStatus.NOT_FOUND);
     }
 
 

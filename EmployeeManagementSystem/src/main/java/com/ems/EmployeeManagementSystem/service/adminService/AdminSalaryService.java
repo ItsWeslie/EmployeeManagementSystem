@@ -66,13 +66,13 @@ public class AdminSalaryService implements AdminSalaryServiceIF {
     {
         return salaryAllotmentDateRepo.getSalaryAllotmentDate()
                 .orElseThrow(()->
-                        new NextPaymentDateNotFoundException("Next payment date not found, Please try again later!"));
+                        new NextPaymentDateNotFoundException("Next payment date not found, Please try again later!")
+                );
     }
 
     @Override
     @Transactional(rollbackFor = EmployeeNotFoundException.class)
     public ResponseEntity<Salary> addSalary(SalaryRequestDTO salaryRequestDTO) {
-
 
         String empId = salaryRequestDTO.getEmpId();
 
@@ -94,18 +94,19 @@ public class AdminSalaryService implements AdminSalaryServiceIF {
 
         Month currentMonth = LocalDate.now().getMonth();
 
-        Salary salary = new Salary();
-        salary.setEmployee(employee);
-        salary.setName(employee.getName());
-        salary.setDepartment(employee.getDepartment());
-        salary.setTotalSalary(totalSalary);
-        salary.setBasicPay(salaryRequestDTO.getBasicPay());
-        salary.setHra(salaryRequestDTO.getHra());
-        salary.setAllowances(salaryRequestDTO.getAllowances());
-        salary.setDeductions(salaryRequestDTO.getDeductions());
-        salary.setMonth(currentMonth);
-        salary.setYear(Year.now());
-        salary.setPaymentDate(salaryRequestDTO.getPaymentDate());
+        Salary  salary = Salary.builder()
+                .employee(employee)
+                .name(employee.getName())
+                .department(employee.getDepartment())
+                .totalSalary(totalSalary)
+                .basicPay(salaryRequestDTO.getBasicPay())
+                .hra(salaryRequestDTO.getHra())
+                .allowances(salaryRequestDTO.getAllowances())
+                .deductions(salaryRequestDTO.getDeductions())
+                .month(currentMonth)
+                .year(Year.now())
+                .paymentDate(salaryRequestDTO.getPaymentDate())
+                .build();
 
         salaryRepo.save(salary);
 
@@ -115,6 +116,7 @@ public class AdminSalaryService implements AdminSalaryServiceIF {
     @Override
     @Transactional(rollbackFor = SalaryNotFoundException.class)
     public ResponseEntity<String> approveSalary(int salaryId) {
+
         Salary salary = salaryRepo.findById(salaryId)
                 .orElseThrow(()->new SalaryNotFoundException("Salary not found for the id : "+salaryId));
 
@@ -178,7 +180,7 @@ public class AdminSalaryService implements AdminSalaryServiceIF {
                 = calculateTotalSalaryPaidThisYearAndCurrentMonth();
 
         HighestAndLowestEarningDepartment highestAndLowestEarningDepartment
-                = findHighestAndLowestEarningDepartment();
+                                = findHighestAndLowestEarningDepartment();
 
         int totalEmployees = findTotalEmployees();
 

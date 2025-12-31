@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,26 +25,22 @@ public class AdminAttendanceService implements AdminAttendanceServiceIF {
 
     public ResponseEntity<List<AttendanceResponseDTO>> getAttendanceRecords() {
 
-        List<Attendance> attendance = attendanceRepo.findAll();
-
-        List<AttendanceResponseDTO> attendanceResponse = new ArrayList<>();
-
-        for (Attendance attendance1 : attendance) {
-
-            AttendanceResponseDTO attendanceResponseDTO = new AttendanceResponseDTO();
-
-            attendanceResponseDTO.setAttendanceId(attendance1.getId());
-            attendanceResponseDTO.setAttendanceStatus(attendance1.getStatus());
-            attendanceResponseDTO.setDate(attendance1.getDate());
-            attendanceResponseDTO.setTime(attendance1.getTime());
-            attendanceResponseDTO.setMonth(attendance1.getMonth());
-            attendanceResponseDTO.setYear(attendance1.getYear());
-            attendanceResponseDTO.setEmpId(attendance1.getEmployee().getEmpId());
-            attendanceResponseDTO.setName(attendance1.getEmployee().getName());
-            attendanceResponseDTO.setDepartment(attendance1.getEmployee().getDepartment());
-
-            attendanceResponse.add(attendanceResponseDTO);
-        }
+        List<AttendanceResponseDTO> attendanceResponse = attendanceRepo.findAll()
+                .stream()
+                .map(attendance -> {
+                    AttendanceResponseDTO dto = new AttendanceResponseDTO();
+                    dto.setAttendanceId(attendance.getId());
+                    dto.setAttendanceStatus(attendance.getStatus());
+                    dto.setDate(attendance.getDate());
+                    dto.setTime(attendance.getTime());
+                    dto.setMonth(attendance.getMonth());
+                    dto.setYear(attendance.getYear());
+                    dto.setEmpId(attendance.getEmployee().getEmpId());
+                    dto.setName(attendance.getEmployee().getName());
+                    dto.setDepartment(attendance.getEmployee().getDepartment());
+                    return dto;
+                })
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(attendanceResponse);
     }

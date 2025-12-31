@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
+@Builder
 public class EmployeeResponseDTO {
 
     private long id;
@@ -58,64 +61,61 @@ public class EmployeeResponseDTO {
     private String workLocation;
 
     public ResponseEntity<List<EmployeeResponseDTO>> employeeResponse(List<Employee> employees) {
-        List<EmployeeResponseDTO> dtoList = new ArrayList<>();
-
-        for (Employee emp : employees) {
-            EmployeeResponseDTO dto = new EmployeeResponseDTO();
-            dto.setId(emp.getId());
-            dto.setEmpId(emp.getEmpId());
-            dto.setName(emp.getName());
-            dto.setEmail(emp.getEmail());
-            dto.setPhone(emp.getPhone());
-            dto.setUserName(emp.getUserName());
-            dto.setRole(emp.getRole());
-            dto.setAddress(emp.getAddress());
-            dto.setDepartment(emp.getDepartment());
-            dto.setBloodGroup(emp.getBloodGroup());
-            dto.setCity(emp.getCity());
-            dto.setState(emp.getState());
-            dto.setDob(emp.getDob());
-            dto.setGender(emp.getGender());
-            dto.setFatherName(emp.getFatherName());
-            dto.setJoinDate(emp.getJoinDate());
-            dto.setNationality(emp.getNationality());
-            dto.setMaritalStatus(emp.getMaritalStatus());
-            dto.setSpouseName(emp.getSpouseName());
-            dto.setWorkLocation(emp.getWorkLocation());
-
-            dtoList.add(dto);
-        }
+        List<EmployeeResponseDTO> dtoList = employees.stream()
+                .map(employee -> EmployeeResponseDTO.builder()
+                        .id(employee.getId())
+                        .empId(employee.getEmpId())
+                        .name(employee.getName())
+                        .email(employee.getEmail())
+                        .phone(employee.getPhone())
+                        .userName(employee.getUserName())
+                        .role(employee.getRole())
+                        .address(employee.getAddress())
+                        .department(employee.getDepartment())
+                        .bloodGroup(employee.getBloodGroup())
+                        .city(employee.getCity())
+                        .state(employee.getState())
+                        .dob(employee.getDob())
+                        .gender(employee.getGender())
+                        .fatherName(employee.getFatherName())
+                        .joinDate(employee.getJoinDate())
+                        .nationality(employee.getNationality())
+                        .maritalStatus(employee.getMaritalStatus())
+                        .spouseName(employee.getSpouseName())
+                        .workLocation(employee.getWorkLocation())
+                        .build())
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtoList);
     }
 
     public ResponseEntity<EmployeeResponseDTO> employeeResponse(Employee emp) {
 
-        EmployeeResponseDTO dto = new EmployeeResponseDTO();
-
-        dto.setId(emp.getId());
-        dto.setEmpId(emp.getEmpId());
-        dto.setName(emp.getName());
-        dto.setEmail(emp.getEmail());
-        dto.setPhone(emp.getPhone());
-        dto.setUserName(emp.getUserName());
-        dto.setRole(emp.getRole());
-        dto.setAddress(emp.getAddress());
-        dto.setDepartment(emp.getDepartment());
-        dto.setBloodGroup(emp.getBloodGroup());
-        dto.setCity(emp.getCity());
-        dto.setState(emp.getState());
-        dto.setDob(emp.getDob());
-        dto.setGender(emp.getGender());
-        dto.setFatherName(emp.getFatherName());
-        dto.setJoinDate(emp.getJoinDate());
-        dto.setNationality(emp.getNationality());
-        dto.setMaritalStatus(emp.getMaritalStatus());
-        dto.setSpouseName(emp.getSpouseName());
-        dto.setImageName(emp.getProfilePic().getImageName());
-        dto.setImageType(emp.getProfilePic().getImageType());
-        dto.setImageData(emp.getProfilePic().getImageData());
-        dto.setWorkLocation(emp.getWorkLocation());
+        EmployeeResponseDTO dto = EmployeeResponseDTO.builder()
+                .id(emp.getId())
+                .empId(emp.getEmpId())
+                .name(emp.getName())
+                .email(emp.getEmail())
+                .phone(emp.getPhone())
+                .userName(emp.getUserName())
+                .role(emp.getRole())
+                .address(emp.getAddress())
+                .department(emp.getDepartment())
+                .bloodGroup(emp.getBloodGroup())
+                .city(emp.getCity())
+                .state(emp.getState())
+                .dob(emp.getDob())
+                .gender(emp.getGender())
+                .fatherName(emp.getFatherName())
+                .joinDate(emp.getJoinDate())
+                .nationality(emp.getNationality())
+                .maritalStatus(emp.getMaritalStatus())
+                .spouseName(emp.getSpouseName())
+                .imageName(emp.getProfilePic().getImageName())
+                .imageType(emp.getProfilePic().getImageType())
+                .imageData(emp.getProfilePic().getImageData())
+                .workLocation(emp.getWorkLocation())
+                .build();
 
         return ResponseEntity.ok(dto);
     }

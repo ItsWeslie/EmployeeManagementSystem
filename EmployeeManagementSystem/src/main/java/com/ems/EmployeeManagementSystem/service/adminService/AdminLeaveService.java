@@ -1,6 +1,7 @@
 package com.ems.EmployeeManagementSystem.service.adminService;
 
 import com.ems.EmployeeManagementSystem.dto.LeaveResponseDTO;
+import com.ems.EmployeeManagementSystem.exceptionHandling.LeaveNotFoundException;
 import com.ems.EmployeeManagementSystem.exceptionHandling.LeaveSummaryNotFoundException;
 import com.ems.EmployeeManagementSystem.interfaces.AdminLeaveServiceIF;
 import com.ems.EmployeeManagementSystem.model.LeaveRequest;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,31 +29,27 @@ public class AdminLeaveService implements AdminLeaveServiceIF {
 
     public ResponseEntity<List<LeaveResponseDTO>> getLeaveRecords() {
 
-        List<LeaveRequest> leaveRequests =  leaveRequestRepo.findAll();
-        List<LeaveResponseDTO> leaveResponses = new ArrayList<>();
-        for (LeaveRequest leaveRequest1 : leaveRequests) {
-            LeaveResponseDTO leaveResponseDTO = new LeaveResponseDTO();
+        List<LeaveResponseDTO> leaveResponses =  leaveRequestRepo.findAll()
+                .stream()
+                .map(leaveRequest -> LeaveResponseDTO.builder()
+                        .leaveId(leaveRequest.getId())
+                        .empId(leaveRequest.getEmployee().getEmpId())
+                        .name(leaveRequest.getEmployee().getName())
+                        .department(leaveRequest.getEmployee().getDepartment())
+                        .leaveReason(leaveRequest.getReason())
+                        .startDate(leaveRequest.getStartDate())
+                        .endDate(leaveRequest.getEndDate())
+                        .leaveStatus(leaveRequest.getStatus())
+                        .build())
+                .collect(Collectors.toList());
 
-            leaveResponseDTO.setLeaveReason(leaveRequest1.getReason());
-            leaveResponseDTO.setLeaveId(leaveRequest1.getId());
-            leaveResponseDTO.setStartDate(leaveRequest1.getStartDate());
-            leaveResponseDTO.setEndDate(leaveRequest1.getEndDate());
-            leaveResponseDTO.setEmpId(leaveRequest1.getEmployee().getEmpId());
-            leaveResponseDTO.setName(leaveRequest1.getEmployee().getName());
-            leaveResponseDTO.setDepartment(leaveRequest1.getEmployee().getDepartment());
-            leaveResponseDTO.setLeaveStatus(leaveRequest1.getStatus());
-            leaveResponses.add(leaveResponseDTO);
-        }
         return ResponseEntity.ok(leaveResponses);
     }
 
     public ResponseEntity<String> approveLeave(int leaveRequestId) {
 
-        LeaveRequest leaveRequest = leaveRequestRepo.findById(leaveRequestId).orElse(null);
-
-        if(leaveRequest==null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found");
-        }
+        LeaveRequest leaveRequest = leaveRequestRepo.findById(leaveRequestId)
+                .orElseThrow(()-> new LeaveNotFoundException("Leave request not found for id: " + leaveRequestId));
 
         if (leaveRequest.getStatus() != LeaveStatus.PENDING) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -93,18 +91,16 @@ public class AdminLeaveService implements AdminLeaveServiceIF {
     }
 
     public ResponseEntity<String> rejectLeave(int id) {
-        LeaveRequest leaveRequest = leaveRequestRepo.findById(id).orElse(null);
+        LeaveRequest leaveRequest = leaveRequestRepo.findById(id)
+                .orElseThrow(()-> new LeaveNotFoundException("Leave request not found for id: " + id));
 
         if (leaveRequest.getStatus() != LeaveStatus.PENDING) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Leave request is already " + leaveRequest.getStatus());
         }
 
-        if(leaveRequest!=null) {
             leaveRequest.setStatus(LeaveStatus.REJECTED);
             leaveRequestRepo.save(leaveRequest);
             return ResponseEntity.ok("Leave rejected successfully");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found");
     }
 }

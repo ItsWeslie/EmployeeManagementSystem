@@ -55,24 +55,33 @@ public class EmployeeLeaveService {
         YearMonth leaveMonth = YearMonth.from(startDate);
 
         if (startDate.isBefore(LocalDate.now()) || !leaveMonth.equals(currentMonth)) {
-            return ResponseEntity.badRequest().body("Leaves can only be applied for the current month and not in the past");
+            return ResponseEntity
+                    .badRequest()
+                    .body("Leaves can only be applied for the current month and not in the past");
         }
 
         if (endDate.isBefore(startDate)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("End date cannot be before start date");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("End date cannot be before start date");
         }
 
         int newNoOfDays = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
         if(newNoOfDays>7)
         {
-            return ResponseEntity.badRequest().body("Cannot apply leave more than 7 days. Kindly contact HR for more details!");
+            return ResponseEntity
+                    .badRequest()
+                    .body("Cannot apply leave more than 7 days. Kindly contact HR for more details!");
         }
 
         // Check for overlapping leave (exclude current leaveRequestId if updating)
         boolean hasOverlap = serviceHelper.isOverlappingLeaveExists(empId, startDate, endDate, leaveRequestId);
+
         if (hasOverlap) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Leave dates overlap with existing leave request");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Leave dates overlap with existing leave request");
         }
 
         // Validate leave balance
@@ -93,7 +102,8 @@ public class EmployeeLeaveService {
 
 
         if (newNoOfDays > remainingLeave) {
-            return ResponseEntity.badRequest()
+            return ResponseEntity
+                    .badRequest()
                     .body("Leave duration (" + newNoOfDays + " days) exceeds remaining leaves (" + remainingLeave + " days)");
         }
 
@@ -110,18 +120,17 @@ public class EmployeeLeaveService {
 
         leaveRequestRepo.save(leaveRequestToSave);
 
-        String message = (leaveRequestId != null) ? "Leave request updated successfully" : "Leave applied successfully";
+        String message = (leaveRequestId != null) ?
+                "Leave request updated successfully" : "Leave applied successfully";
         return ResponseEntity.ok(message);
     }
 
     public ResponseEntity<String> deleteLeaveRequest(int id) {
-        Optional<?> optional = leaveRequestRepo.findById(id);
+         leaveRequestRepo.findById(id)
+                 .orElseThrow(() -> new LeaveNotFoundException("Leave request not found for id : " + id));
 
-        if(optional.isPresent()) {
             leaveRequestRepo.deleteById(id);
             return ResponseEntity.ok("Leave request deleted successfully");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Leave request not found");
     }
 
     public ResponseEntity<?> getMyLeaveHistory(String empId) {
@@ -148,15 +157,16 @@ public class EmployeeLeaveService {
 
         String mostTakenLeave = findMostTakenLeave(leaveMap);
 
-        LeaveDataDTO leaveDataDTO = new LeaveDataDTO();
-        leaveDataDTO.setEmpId(empId);
-        leaveDataDTO.setLeaveTaken(leaveSummary.getLeaveTaken());
-        leaveDataDTO.setLongestLeave(leaveSummary.getLongestLeaveDuration());
-        leaveDataDTO.setTotalLeave(leaveSummary.getTotalLeave());
-        leaveDataDTO.setRemainingLeave(leaveSummary.getRemainingLeave());
-        leaveDataDTO.setMostTakenLeave(mostTakenLeave);
-        leaveDataDTO.setLeavePieChart(leaveMap);
-        leaveDataDTO.setLeaveRequests(leaveRequests);
+        LeaveDataDTO leaveDataDTO = LeaveDataDTO.builder()
+                        .empId(empId)
+                        .leaveTaken(leaveSummary.getLeaveTaken())
+                        .longestLeave(leaveSummary.getLongestLeaveDuration())
+                        .totalLeave(leaveSummary.getTotalLeave())
+                        .remainingLeave(leaveSummary.getRemainingLeave())
+                        .mostTakenLeave(mostTakenLeave)
+                        .leavePieChart(leaveMap)
+                        .leaveRequests(leaveRequests)
+                        .build();
 
         return ResponseEntity.ok(leaveDataDTO);
     }

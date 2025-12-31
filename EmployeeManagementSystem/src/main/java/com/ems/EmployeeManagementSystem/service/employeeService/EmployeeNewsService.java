@@ -23,17 +23,14 @@ public class EmployeeNewsService {
 
     public boolean initializeNewsStatusForEmployees(News newNEWS)
     {
-        List<Employee> employees = employeeRepo.findAll();
-
-        List<EmployeeNewsStatus> statuses = employees
-                .stream()
-                .map(employee -> {
-            EmployeeNewsStatus newsStatus = new EmployeeNewsStatus();
-            newsStatus.setEmployee(employee);
-            newsStatus.setNews(newNEWS);
-            newsStatus.setRead(false);
-            return newsStatus;}).toList();
-
+        List<EmployeeNewsStatus> statuses = employeeRepo.findAll()
+                                .stream()
+                                .map(employee -> EmployeeNewsStatus.builder()
+                                .employee(employee)
+                                .news(newNEWS)
+                                .isRead(false)
+                                .build())
+                                .toList();
             employeeNewsStatusRepo.saveAll(statuses);
 
             return true;

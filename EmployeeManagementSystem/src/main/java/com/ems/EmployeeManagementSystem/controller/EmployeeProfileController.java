@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/employee")
@@ -23,7 +25,7 @@ public class EmployeeProfileController {
     @PutMapping("/updateMyProfilePic/{empId}")
     public ResponseEntity<?> updateMyData(@PathVariable("empId") String empId,
                                           @RequestPart(value = "imageData",required = false) MultipartFile image
-    ) {
+    ) throws IOException {
         return employeeProfileService.updateMyData(empId,image);
     }
 

@@ -3,6 +3,7 @@ package com.ems.EmployeeManagementSystem.dto;
 import com.ems.EmployeeManagementSystem.enums.LeaveStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class LeaveResponseDTO {
     private String empId;
     private String leaveReason;
