@@ -4,6 +4,7 @@ import com.ems.EmployeeManagementSystem.dto.EmployeeRequestDTO;
 import com.ems.EmployeeManagementSystem.dto.EmployeeResponseDTO;
 import com.ems.EmployeeManagementSystem.exceptionHandling.EmployeeNotFoundException;
 import com.ems.EmployeeManagementSystem.interfaces.AdminEmployeeServiceIF;
+import com.ems.EmployeeManagementSystem.mappers.EmployeeMapper;
 import com.ems.EmployeeManagementSystem.model.Employee;
 import com.ems.EmployeeManagementSystem.model.LeaveSummary;
 import com.ems.EmployeeManagementSystem.repository.EmployeeRepo;
@@ -24,6 +25,7 @@ public class AdminEmployeeService implements AdminEmployeeServiceIF {
     private final EmployeeResponseDTO employeeResponseDTO;
     private final LeaveSummary leaveSummary;
     private final LeaveSummaryRepo leaveSummaryRepo;
+    private final EmployeeMapper employeeMapper;
 
     public ResponseEntity<List<EmployeeResponseDTO>> getEmployees() {
         List<Employee> emp = employeeRepo.findAll();
@@ -32,7 +34,7 @@ public class AdminEmployeeService implements AdminEmployeeServiceIF {
 
     public ResponseEntity<Employee> addEmployee(EmployeeRequestDTO employeeRequestDTO){
 
-        Employee emp = employeeRequestDTO.employeeRequest(employeeRequestDTO);
+        Employee emp = employeeMapper.apply(employeeRequestDTO);
 
         employeeRepo.save(emp);
 
